@@ -3,7 +3,7 @@
 
 Un projet Kanban complet développé avec :  
 • Node.js (Express) pour l’API  
-• Vite + JavaScript/TypeScript pour le client  
+• Vite + JavaScript pour le client  
 • PostgreSQL pour la base de données  
 • Docker & Docker Compose pour l’orchestration  
 
