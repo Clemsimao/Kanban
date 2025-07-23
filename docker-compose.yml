@@ -17,6 +17,10 @@ services:
     container_name: kanban-api
     networks:
       - kanban-network
+    environment:
+      - PORT=3000
+      - PG_URL=postgres://kanban:kanban@db:5432/kanban
+      - ALLOWED_DOMAINS=*
     command: sh -c "npm run db:seed && npm start"
 
   # nom du service
