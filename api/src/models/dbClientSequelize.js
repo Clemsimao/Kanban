@@ -11,11 +11,16 @@ import { Sequelize } from "sequelize";
 // Vérification que PG_URL est définie
 console.log("🔍 Variables d'environnement disponibles :", Object.keys(process.env));
 console.log("🔍 PG_URL value:", process.env.PG_URL);
+console.log("🔍 DATABASE_URL value:", process.env.DATABASE_URL);
+console.log("🔍 POSTGRES_URL value:", process.env.POSTGRES_URL);
 
-const pgUrl = process.env.PG_URL;
+// Railway utilise souvent DATABASE_URL au lieu de PG_URL
+const pgUrl = process.env.PG_URL || process.env.DATABASE_URL || process.env.POSTGRES_URL;
 if (!pgUrl) {
-  console.error("❌ PG_URL n'est pas définie dans les variables d'environnement");
-  console.error("Variables disponibles:", Object.keys(process.env).filter(key => key.includes('PG') || key.includes('POSTGRES')));
+  console.error("❌ Aucune URL de base de données trouvée");
+  console.error("Variables de DB disponibles:", Object.keys(process.env).filter(key => 
+    key.includes('PG') || key.includes('POSTGRES') || key.includes('DATABASE')
+  ));
   process.exit(1);
 }
 
