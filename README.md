@@ -1,56 +1,78 @@
-# Kanban - Tests & déploiement
 
-## Architecture
+# Kanban Project
 
-L'application Kanban est une application de gestion de projet en mode *Single Page Application* (SPA) découpée en deux projets :
+Un projet Kanban complet développé avec :  
+• Node.js (Express) pour l’API  
+• Vite + JavaScript pour le client  
+• PostgreSQL pour la base de données  
+• Docker & Docker Compose pour l’orchestration  
 
-- un serveur d'API REST, dans le répertoire `api`
-- une application client Web, dans le répertoire `client`.
+---
 
-L'application `api` utilise principalement les technologies suivantes :
+## 📦 Installation
 
-- base de données [PostgreSQL](https://www.postgresql.org/)
-- serveur Web [Express](http://expressjs.com/)
-- bibliothèque de validation de données [joi](https://joi.dev/)
-- ORM [Sequelize](https://sequelize.org/)
+1. Cloner le dépôt  
+```bash
+git clone https://github.com/ton-pseudo/kanban.git
+cd kanban
+```
 
-L'application `client` utilise principalement :
+2. Lancer le projet avec Docker  
+Assure-toi d’avoir Docker et Docker Compose installés.  
+```bash
+docker-compose up –build
+```
+- API disponible sur : [http://localhost:3000](http://localhost:3000)  
+- Frontend disponible sur : [http://localhost:4173](http://localhost:4173)  
 
-- des fichiers statiques (HTML, CSS, JavaScript)
-- le bundler [Vite](https://vitejs.dev/)
+---
 
-## Installation
+## ⚙️ Configuration
 
-- préparer une base de données pour stocker les données du projet
-- `npm install`
-  - note : à la fin de l'installation des dépendances backend, se lancera automatiquement le script NPM `postinstall` qui lui installe les dépendances du dossier `client`.
-- dans les projets `api` et `client` : `cp .env.example .env`
-  - penser à modifier ce qui doit l'être !
-- à la première installation :
-  - `npm run db:create` : créer la structure de la base de données
-  - `npm run db:seed` : insérer des données
-- si besoin de réinitialiser la base de données : `npm run db:reset`
+Les variables d’environnement sont définies dans le fichier `api/.env` :  
+```
+PORT=3000
+PG_URL=postgres://kanban:kanban@db:5432/kanban
+ALLOWED_DOMAINS=*
+```
 
-## Mode developpement
+---
 
-Dans **deux terminaux** séparés :
+## 🧪 Seeding de la base de données
 
-- `npm run dev:back`
-- `npm run dev:front`
+Les scripts d’initialisation PostgreSQL se trouvent dans :  
+`./api/data/`  
+Ils sont automatiquement exécutés au démarrage du conteneur db.
 
-## Mode production
+---
 
-### Production front
+## 🚀 Scripts utiles
 
-- `cd client`
-- `npm run build`
-  - pour créer le bundle front
+Rebuild les conteneurs  
+```bash
+docker-compose up –build
+```
 
-- `npm run preview`
-  - pour lancer le front en mode production
+Arrêter les services  
+```bash
+docker-compose down
+```
 
-### Production back
+Nettoyer tous les volumes (⚠️ efface les données)  
+```bash
+docker-compose down -v
+```
 
-- `cd api`
-- `npm run start`
-  - pour lancer le back en mode prod
+---
+
+## 🛡️ Sécurité
+
+• Connexion à la base via `kanban:kanban`  
+• Ne pas exposer `.env` en production  
+• Prévoir HTTPS et un reverse proxy en production  
+
+---
+
+## ✨ Auteur
+
+clemsimao – Projet personnel réalisé dans le cadre de ma formation en développement web
