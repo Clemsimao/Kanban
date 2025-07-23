@@ -9,6 +9,9 @@ import { Sequelize } from "sequelize";
 // ECMAScript modules (export)
 // Instance de connexion à la base de données Postgres
 // Vérification que PG_URL est définie
+console.log("🔍 Variables d'environnement disponibles :", Object.keys(process.env));
+console.log("🔍 PG_URL value:", process.env.PG_URL);
+
 const pgUrl = process.env.PG_URL;
 if (!pgUrl) {
   console.error("❌ PG_URL n'est pas définie dans les variables d'environnement");
