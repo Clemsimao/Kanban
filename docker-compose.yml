@@ -21,7 +21,7 @@ services:
       PORT: 3000
       PG_URL: postgres://kanban:kanban@db:5432/kanban
       ALLOWED_DOMAINS: "*"
-    command: sh -c "npm run db:seed && npm start"
+    command: sh -c "node src/migrations/populateTables.js && node index.js"
 
   # nom du service
   client:
