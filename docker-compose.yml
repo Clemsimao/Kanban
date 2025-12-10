@@ -15,9 +15,12 @@ services:
       - db
     # on nomme le conteneur parce qu'on fait les choses proprement
     container_name: kanban-api
+    restart: always
     networks:
       - kanban-network
-    command: sh -c "npm run db:seed && npm start"
+    environment:
+      - PG_URL=postgres://kanban:kanban@db:5432/kanban
+    command: sh -c "npm run db:create && npm run db:seed && npm start"
 
   # nom du service
   client:
@@ -41,9 +44,10 @@ services:
   # nom du service
   db:
     # on utilise l'image postgre
-    image: postgres
+    image: postgres:16
     # nom du conteneur
     container_name: kanban-database
+    restart: always
     # environnement : on déclare les infos nécessaires à notre BDD
     environment:
       - POSTGRES_USER=kanban
@@ -54,13 +58,13 @@ services:
       # répertoire des scripts d'initialisation
       - ./api/data:/docker-entrypoint-initdb.d
       # volume de persistance des données
-      - pg-kanban:/var/lib/postgresql/data
+      - pg-kanban-v2:/var/lib/postgresql/data
     networks:
       - kanban-network
 
 # ne pas oublier les volumes de persistance utilisés
 volumes:
-  pg-kanban:
+  pg-kanban-v2:
 
 networks:
   kanban-network:
