@@ -1,78 +1,63 @@
-
 # Kanban Project
 
-Un projet Kanban complet développé avec :  
-• Node.js (Express) pour l’API  
-• Vite + JavaScript pour le client  
-• PostgreSQL pour la base de données  
-• Docker & Docker Compose pour l’orchestration  
+Un projet Kanban personnalisable et moderne, développé pour gérer des tâches avec style.
+
+## 🛠 Technologies
+
+*   **API** : Node.js (Express)
+*   **Client** : Vite + Vanilla JS + Bulma CSS
+*   **Base de données** : PostgreSQL 16
+*   **Infrastructure** : Docker & Docker Compose
 
 ---
 
-## 📦 Installation
+## ✨ Fonctionnalités Nouvelles
 
-1. Cloner le dépôt  
-```bash
-git clone https://github.com/ton-pseudo/kanban.git
-cd kanban
-```
+### 🎨 Personnalisation Avancée
+*   **En-têtes Colorés** : Chaque liste peut avoir sa propre couleur d'en-tête (Défaut : Bleu `#3e8ed0`).
+*   **Listes Transparentes** : Design épuré sans fond gris lourd, mettant en valeur le contenu.
 
-2. Lancer le projet avec Docker  
-Assure-toi d’avoir Docker et Docker Compose installés.  
-```bash
-docker-compose up –build
-```
-- API disponible sur : [http://localhost:3000](http://localhost:3000)  
-- Frontend disponible sur : [http://localhost:4173](http://localhost:4173)  
+### 🌗 Mode Sombre & Thèmes
+*   Gestion automatique (préférence système) ou manuelle (Light/Dark).
+*   **Mode Sombre Immersif** :
+    *   Fond de page anthracite profond (`#181818`).
+    *   Listes transparentes pour un effet aéré.
+    *   Cartes gris clair (`#666666`) pour un contraste optimal.
 
 ---
 
-## ⚙️ Configuration
+## 📦 Installation & Lancement
 
-Les variables d’environnement sont définies dans le fichier `api/.env` :  
-```
-PORT=3000
-PG_URL=postgres://kanban:kanban@db:5432/kanban
-ALLOWED_DOMAINS=*
-```
+1.  **Prérequis** : Docker et Docker Compose installés.
 
----
+2.  **Lancer le projet** :
+    ```bash
+    docker-compose up --build
+    ```
+    *(La base de données s'initialise et se peuple automatiquement au premier lancement)*
 
-## 🧪 Seeding de la base de données
-
-Les scripts d’initialisation PostgreSQL se trouvent dans :  
-`./api/data/`  
-Ils sont automatiquement exécutés au démarrage du conteneur db.
+3.  **Accéder à l'application** :
+    *   Frontend : [http://localhost:4173](http://localhost:4173)
+    *   API : [http://localhost:3000](http://localhost:3000)
 
 ---
 
-## 🚀 Scripts utiles
+## ⚙️ Commandes Utiles
 
-Rebuild les conteneurs  
-```bash
-docker-compose up –build
-```
-
-Arrêter les services  
-```bash
-docker-compose down
-```
-
-Nettoyer tous les volumes (⚠️ efface les données)  
-```bash
-docker-compose down -v
-```
+| Action | Commande |
+| :--- | :--- |
+| **Démarrer** | `docker-compose up` |
+| **Reconstruire** | `docker-compose up --build` |
+| **Arrêter** | `docker-compose down` |
+| **Reset Complet** (⚠️ Efface les données) | `docker-compose down -v` |
 
 ---
 
-## 🛡️ Sécurité
-
-• Connexion à la base via `kanban:kanban`  
-• Ne pas exposer `.env` en production  
-• Prévoir HTTPS et un reverse proxy en production  
+## 🛡️ Notes de Sécurité
+*   Fichier `.env` inclus par commodité (à sécuriser en prod).
+*   Base de données PostgreSQL isolée dans un réseau Docker.
 
 ---
 
 ## ✨ Auteur
-
-clemsimao – Projet personnel réalisé dans le cadre de ma formation en développement web
+*clemsimao* – Projet enrichi avec Antigravity UI.
