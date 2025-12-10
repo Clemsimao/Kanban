@@ -13,7 +13,7 @@ export async function getAllLists(req, res) {
       ],
       include: { association: "cards", include: "tags" } // Avec ces includes, on renvoie toute la BDD => mauvaise pratique car bcp de data sur le réseau. Avantage : faciliter notre travail en frontend plus tard
     });
-  
+
     // Renvoyer au format JSON
     res.json(lists);
 
@@ -27,26 +27,32 @@ export async function createList(req, res) {
 
   // Récupérer les données de la liste à créé fournies par l'utilisateur
   // console.log(req.body);
-  let { title, position } = req.body;
+  let { title, position, color } = req.body;
   title = sanitizeHtml(title); // Ici, on sanitize l'input de l'utilisateur, pour se prémunir des injections XSS (démo !) // Mieux : le faire de manière globale sur toute notre app !
 
   // Analyser les données du body pour vérifier que tout est en règle
 
   // - Vérifier que le title (obligatoire !) est présent et est une string
-  if (! title || typeof title !== "string") {
+  if (!title || typeof title !== "string") {
     res.status(400).json({ error: "Property 'title' should be a non empty string." });
     return; // On oublie pas le return pour arrêter le reste de la fonction
   }
 
   // - Si le client nous fourni la "position", vérifier que cette position est un nombre entier supérieur ou égal à 1
-  if ((position !== undefined) && ! iStrictlyPositiveInteger(position)) {
+  if ((position !== undefined) && !iStrictlyPositiveInteger(position)) {
     return res.status(400).json({ error: "Property 'position' should be a positive integer when provided." });
+  }
+
+  // - Si le client nous fourni la "color", vérifier que c'est une string (on pourrait aussi valider le format hexadécimal)
+  if (color && typeof color !== "string") {
+    return res.status(400).json({ error: "Property 'color' should be a string." });
   }
 
   // Créer la nouvelle liste en BDD
   const createdList = await List.create({
-    title: title, 
-    position: position // si position est "undefined", notre ORM Sequelize mettra la valeur par défaut, ie 1
+    title: title,
+    position: position, // si position est "undefined", notre ORM Sequelize mettra la valeur par défaut, ie 1
+    color: color // idem pour la couleur, valeur par défaut #3e8ed0
   });
 
   // Répondre au client avec les bonnes infos (cf. la spécification !)
@@ -76,7 +82,7 @@ export async function getOneList(req, res) {
   const list = await List.findByPk(listId);
 
   // Si elle n'existe pas => 404
-  if (! list) {
+  if (!list) {
     return res.status(404).json({ error: "List not found. Please verify the provided ID." });
   }
 
@@ -91,7 +97,7 @@ export async function getOneListInsecure(req, res) {
   // Equivalent de db.query() avec le module "pg"
   const [, result] = await sequelize.query(`SELECT * FROM list WHERE id = ${listId}`); // Contre productif, autant utilise List.findByPk, mais pour l'extension de l'injection SQL profitons de cette possibilité
   //                                  ^ SELECT * FROM list WHERE id = 1; DROP TABLE list; --
-  
+
   // Pour éviter le soucis avec pg : 
   // ====> soit notre ORM
   //       - const list = await List.findByPk(listId); 
@@ -100,25 +106,26 @@ export async function getOneListInsecure(req, res) {
 
   const list = result.rows[0];
 
-  if (! list) { return res.status(404).json({ error: "List not found. Please verify the provided ID." }); }
+  if (!list) { return res.status(404).json({ error: "List not found. Please verify the provided ID." }); }
   res.json(list);
 }
 
 export async function updateList(req, res) {
   // console.log(req.body); // { title, position }
-  
+
   // Validation du BODY :
   // - title : string non vide
   // - position : entier, positif
   // - au moins 1 de ces 2 champs doit être présent
-  
+
   // Valider le body ==> Pas en vanilla JS, outil : Joi
   // ==> On définie ce à quoi le body que nous envoie le client doit ressembler
   // ==> On valide nos body, mais plus à la main, avec un outil pratique !
   const schema = Joi.object({
     title: Joi.string().min(1), // min(1) : LORSQUE FOURNI, le nouveau titre doit avoir au moins 1 caractère
-    position: Joi.number().integer().min(1) // min(1) : LORS FOURNIE, la position doit être supérieur à 1
-  }).min(1).message("Invalid body: provide at least 'title' or 'position' property."); 
+    position: Joi.number().integer().min(1), // min(1) : LORS FOURNIE, la position doit être supérieur à 1
+    color: Joi.string() // Optionnel
+  }).min(1).message("Invalid body: provide at least 'title' or 'position' property.");
 
   const { error } = schema.validate(req.body); // Si error est non null, alors cela signifie que le body ne passe pas la validation
   if (error) {
@@ -137,7 +144,7 @@ export async function updateList(req, res) {
   const list = await List.findByPk(listId);
 
   // Si elle n'existe pas => 404
-  if (! list) {
+  if (!list) {
     return res.status(404).json({ error: "List not found. Please verify the provided ID." });
   }
 
@@ -147,6 +154,9 @@ export async function updateList(req, res) {
   }
   if (req.body.position) {
     list.position = req.body.position;
+  }
+  if (req.body.color) {
+    list.color = req.body.color;
   }
   await list.save(); // Bonne nouvelle, sequelize gère automatiquement l'update du champs `updated_at`
 
@@ -167,7 +177,7 @@ export async function deleteList(req, res) {
   const list = await List.findByPk(listId);
 
   // Si elle n'existe pas => 404
-  if (! list) {
+  if (!list) {
     return res.status(404).json({ error: "List not found. Please verify the provided ID." });
   }
 

@@ -29,8 +29,29 @@
 <body class="container is-fluid my-6">
   <header class="my-5">
     <h1 class="title has-text-centered is-1">Kanban</h1>
-    <button id="add-list-button" class="button is-info is-outlined"><i class="fas fa-plus mr-2"></i>Ajouter une
-      liste</button>
+
+    <div class="buttons">
+      <div class="field has-addons mr-4">
+        <p class="control">
+          <button class="button is-selected" id="theme-auto" title="Automatique">
+            <span class="icon is-small"><i class="fas fa-adjust"></i></span>
+          </button>
+        </p>
+        <p class="control">
+          <button class="button" id="theme-light" title="Clair">
+            <span class="icon is-small"><i class="fas fa-sun"></i></span>
+          </button>
+        </p>
+        <p class="control">
+          <button class="button" id="theme-dark" title="Sombre">
+            <span class="icon is-small"><i class="fas fa-moon"></i></span>
+          </button>
+        </p>
+      </div>
+
+      <button id="add-list-button" class="button is-info is-outlined"><i class="fas fa-plus mr-2"></i>Ajouter une
+        liste</button>
+    </div>
   </header>
 
   <main id="lists-container">
@@ -50,6 +71,9 @@
         <div class="modal-card-body">
           <label for="add-list-title" class="label">Titre</label>
           <input id="add-list-title" class="input" type="text" name="title" placeholder="Titre de la liste" required>
+
+          <label for="add-list-color" class="label mt-3">Couleur</label>
+          <input id="add-list-color" class="input" type="color" name="color" value="#3e8ed0">
         </div>
 
         <div class="modal-card-foot">
@@ -74,6 +98,9 @@
           <label for="edit-list-title" class="label">Nouveau titre</label>
           <input id="edit-list-title" class="input" type="text" name="title" placeholder="Nouveau titre de la liste"
             required>
+
+          <label for="edit-list-color" class="label mt-3">Nouvelle couleur</label>
+          <input id="edit-list-color" class="input" type="color" name="color" value="#3e8ed0">
         </div>
 
         <div class="modal-card-foot">
@@ -207,7 +234,7 @@
 
   <!-- Template pour une liste -->
   <template id="list-template">
-    <section class="message is-info" slot="list-id">
+    <section class="message is-black" slot="list-id">
       <div class="message-header">
         <div slot="list-title">TITRE_DE_LA_LISTE</div>
         <div>
@@ -239,4 +266,5 @@
   </template>
 
 </body>
+
 </html>

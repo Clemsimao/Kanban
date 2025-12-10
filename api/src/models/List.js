@@ -2,7 +2,7 @@ import { Model, DataTypes } from "sequelize"; // Module NPM
 
 import { sequelize } from "./dbClientSequelize.js"; // Module local
 
-export class List extends Model {}
+export class List extends Model { }
 
 List.init({
   title: {
@@ -13,6 +13,11 @@ List.init({
     type: DataTypes.INTEGER,
     allowNull: false,
     defaultValue: 1
+  },
+  color: {
+    type: DataTypes.TEXT,
+    allowNull: false,
+    defaultValue: "#3e8ed0"
   }
 }, {
   sequelize,

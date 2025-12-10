@@ -17,9 +17,12 @@ import {
   initClosingModalsButtons
 } from "./utils.js";
 
+import { initTheme } from "./theme.js";
+
 // Lorsque l'intégralité du DOM est chargé dans la page, on lance notre code JS
 document.addEventListener("DOMContentLoaded", async () => {
 
+  initTheme();
   initAddListButton();
   initClosingModalsButtons();
 

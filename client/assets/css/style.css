@@ -1,3 +1,42 @@
+:root {
+  --bg-color: #fdfdfd;
+  /* Slightly off-white for better eye comfort */
+  --text-color: #363636;
+  --header-bg: transparent;
+  --modal-bg: #ffffff;
+  --input-bg: #ffffff;
+  --input-text: #363636;
+  --input-border: #dbdbdb;
+  --list-bg: #ffffff;
+  --card-bg: #ffffff;
+}
+
+html.dark-mode {
+  --bg-color: #181818;
+  /* Material Design Dark Background recommendation */
+  --text-color: #e0e0e0;
+  --header-bg: #121212;
+  --modal-bg: #1e1e1e;
+  /* Elevated surface */
+  --input-bg: #2d2d2d;
+  --input-text: #e0e0e0;
+  --input-border: #404040;
+  --list-bg: #555555;
+  /* Lighter again */
+  --card-bg: #666666;
+  /* Lighter again */
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
 header {
   display: flex;
   align-items: center;
@@ -5,13 +44,60 @@ header {
   flex-wrap: wrap;
 }
 
+.title {
+  color: var(--text-color) !important;
+}
+
+/* Force message body (List content) to use our variable, but transparent bg as requested */
+.message-body {
+  /* background-color: var(--list-bg) !important; <--- DISABLED */
+  color: var(--text-color);
+  border: none;
+  /* remove Bulma border if any */
+  transition: background-color 0.3s ease;
+}
+
+.modal-card-head,
+.modal-card-foot {
+  background-color: var(--modal-bg);
+  border-color: var(--input-border);
+}
+
+.modal-card-title {
+  color: var(--text-color);
+}
+
+.modal-card-body {
+  background-color: var(--modal-bg);
+  color: var(--text-color);
+}
+
+.input,
+.textarea {
+  background-color: var(--input-bg);
+  color: var(--input-text);
+  border-color: var(--input-border);
+}
+
+.input::placeholder {
+  color: #888;
+}
+
+.message.is-info {
+  background-color: var(--list-bg);
+  /* Use generic bg if color not set, but list module overrides this */
+}
+
+/* Override Bulma message header/body to respect transparency/colors if needed */
+
+
 main {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   column-gap: 1rem;
 }
 
-main > section {
+main>section {
   height: min-content;
 }
 

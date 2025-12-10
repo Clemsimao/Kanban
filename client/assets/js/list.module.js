@@ -6,12 +6,12 @@ import { addCardToList } from "./cards.module.js";
 export function initAddListButton() {
   // Selectionner le bouton d'ajout de liste
   const addListButton = document.querySelector("#add-list-button");
-  
+
   // Ecouter le click sur ce bouton, en cas de click : 
   addListButton.addEventListener("click", () => {
     // - Selectionner la modale d'ajout de liste
     const addListModal = document.querySelector("#add-list-modal");
-    
+
     // - Lui mettre la classe is-active
     addListModal.classList.add("is-active");
   });
@@ -41,7 +41,20 @@ export function addListToListsContainer(list) { // list = { id: X, title: "...",
   listClone.querySelector('[slot="list-title"]').textContent = list.title;
 
   // - ajouter un ID sur la liste
-  listClone.querySelector('[slot="list-id"]').id = `list-${list.id}`;
+  const listElement = listClone.querySelector('[slot="list-id"]');
+  listElement.id = `list-${list.id}`;
+
+  // - modifier la couleur de fond de la liste (HEADER UNIQUEMENT pour garder le corps lisible)
+  if (list.color) {
+    // On retire la classe is-black pour ne pas avoir le noir par défaut
+    listElement.classList.remove("is-black");
+
+    const listHeader = listElement.querySelector(".message-header");
+    if (listHeader) {
+      listHeader.style.backgroundColor = list.color;
+      listHeader.style.color = "#ffffff"; // Force text white on colored headers for better contrast
+    }
+  }
 
   // - écouter le click sur le bouton edit
   const editListButton = listClone.querySelector('[slot="edit-list-button"]');
@@ -64,6 +77,17 @@ export function addListToListsContainer(list) { // list = { id: X, title: "...",
 
     // Selectionner l'input "title" de la modale et modifier sa value
     document.querySelector("#edit-list-title").value = previousListTitle;
+
+    // Selectionner l'input "color" et modifier sa value (il faut récuperer la couleur actuelle de la liste)
+    // On peut la récupérer depuis le style inline de l'élément liste
+    // Note: rgb(r, g, b) ou hex ? L'input color veut du hex.
+    // Selectionner l'input "color" et modifier sa value (il faut récuperer la couleur actuelle)
+    // On peut la récupérer depuis le style inline du HEADER
+    const currentHeader = targetedList.querySelector(".message-header");
+    const currentColor = currentHeader ? currentHeader.style.backgroundColor : "#ffffff";
+
+    // Simplification: on stocke la couleur dans un dataset sur l'élément liste pour la retrouver facilement
+    document.querySelector("#edit-list-color").value = targetedList.dataset.color || "#3e8ed0";
   });
 
   // - écouter le click sur le bouton supprimer
@@ -120,13 +144,17 @@ export function addListToListsContainer(list) { // list = { id: X, title: "...",
         displaySuccessToast("Positions des cartes sauvegardées avec succès");
       }
     }
-  });  
+  });
 
   // - selectionner le lists-container
   const listsContainer = document.querySelector("#lists-container");
 
   // - insérer le clone dedans
   listsContainer.prepend(listClone);
+
+  // - on stocke la couleur dans un dataset pour la modale d'édition
+  const insertedList = document.querySelector(`#list-${list.id}`);
+  if (list.color) insertedList.dataset.color = list.color;
 
   // - on ajoute les cartes dans l'ordre inverse
   if (list.cards) {
@@ -151,7 +179,7 @@ export function initAddListForm() {
     const createdList = await postList(newListData); // newListData = { ... }
     //    ^ { id, title, position, created_at, updated_at } || null
 
-    if (! createdList) { // Si erreur lors de la création de la liste
+    if (!createdList) { // Si erreur lors de la création de la liste
 
       // Notifier l'utilisateur
       alert("Une erreur est survenue. Réessayer plus tard."); // TODO: remplacer le alert par l'ouverture d'une modale d'erreur plus ergonomique
@@ -182,7 +210,7 @@ export function initEditListForm() {
   editListForm.addEventListener("submit", async (event) => {
     // - prevent default
     event.preventDefault();
-    
+
     // Récupérer les nouvelles valeurs entrées par l'utilisateur (new FormData)
     const newListData = Object.fromEntries(new FormData(editListForm)); // newListData = { title: "..." }
 
@@ -191,9 +219,9 @@ export function initEditListForm() {
 
     // Appel HTTP avec fetch --> api.js : patchList(listId, nouveauTitle) qui nous retourne la nouvelle liste updated !
     const updatedList = await patchList(listId, newListData);
-    
+
     // Si une erreur a eu lieu (et la fonction nous a renvoyé null)
-    if (! updatedList) {
+    if (!updatedList) {
       alert("Une erreur est survenue. Réessayer plus tard."); // TODO: remplacer le alert par l'ouverture d'une modale d'erreur plus ergonomique
       return;
     }
@@ -213,6 +241,21 @@ export function initEditListForm() {
     //   - selectionner son "header" et modifier son textContent avec le nouveau titre
     updatedListElement.querySelector('[slot="list-title"]').textContent = updatedList.title;
 
+    //   - selectionner son "header" et modifier son textContent avec le nouveau titre
+    updatedListElement.querySelector('[slot="list-title"]').textContent = updatedList.title;
+
+    //   - modifier la couleur de fond du HEADER
+    if (updatedList.color) {
+      // On retire la classe is-black
+      updatedListElement.classList.remove("is-black");
+
+      const updatedListHeader = updatedListElement.querySelector(".message-header");
+      if (updatedListHeader) {
+        updatedListHeader.style.backgroundColor = updatedList.color;
+        updatedListHeader.style.color = "#ffffff";
+      }
+      updatedListElement.dataset.color = updatedList.color;
+    }
   });
 }
 
@@ -230,25 +273,25 @@ export function initDeleteListForm() {
 
     // - récupérer l'ID de la liste à supprimer dans les dataset de la modale
     const listId = deleteListModal.dataset.listId;
-  
+
     // - CALL HTTP : DELETE /lists/ID
     const isDeleted = await deleteList(listId);
-  
+
     // - SI PAS OK : alert()
     if (!isDeleted) {
       alert("Une erreur est survenue. Réessayer plus tard."); // TODO: remplacer le alert par l'ouverture d'une modale d'erreur plus ergonomique
       return;
     }
-    
+
     //   - toast de succès
     displaySuccessToast("La liste et ses cartes ont été supprimé avec succès.");
-    
+
     //   - fermer la modale
     closeActiveModal();
 
     // - selectionner la liste par son ID
     const deletedListElement = document.querySelector(`#list-${listId}`);
-    
+
     // - "la retirer du DOM" ==> .remove()
     deletedListElement.remove();
   });
@@ -265,13 +308,13 @@ export function initListsDragAndDrop() {
       // console.log(event); // { item, oldIndex, newIndex }
 
       // PATCH /lists/ID la nouvelle position
-      
+
       // Récupérer toutes les listes
       const lists = Array.from(document.querySelector("#lists-container").children); // [{}, {}, {}]
-      
+
       // Pour chaque liste : 
       lists.forEach(async (list, index) => {
-        
+
         // Déterminer son ID
         const listId = parseInt(list.id.substring(5)); // "list-4" ==> "4" ==> 4
 
